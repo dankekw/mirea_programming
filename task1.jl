@@ -1,18 +1,21 @@
 using HorizonSideRobots
 
-function put_marks_side!(robot,side)::Nothing
+#ставит маркеры, пока не дойдет до назначенной стены 
+function put_marks_side!(robot::Robot,side::HorizonSide)::Nothing
     while isborder(robot,side)==false 
         move!(robot,side)
         putmarker!(robot)
     end
 end
 
-function move_by_markers(r,side)::Nothing
-    while ismarker(r)==true 
-        move!(r,side) 
+#передвигает робота пока под ним есть маркеры в назначенную сторону
+function move_by_markers(robot::Robot,side::HorizonSide)::Nothing
+    while ismarker(robot)==true 
+        move!(robot, side) 
     end
 end
 
+#изменяет направление робота на противоположенное
 function inverse(side::HorizonSide)::HorizonSide
     if side == Nord
         return Sud
@@ -24,10 +27,11 @@ function inverse(side::HorizonSide)::HorizonSide
     end
 end 
 
-function rectangular_cross!(robot)::Nothing
+#рисует прямоугольный крест
+function rectangular_cross!(robot::Robot)::Nothing
     for side in (Nord,West,Sud,Ost) 
-        put_marks_side!(r,side)
-        move_by_markers(r,inverse(side))
+        put_marks_side!(robot,side)
+        move_by_markers(robot,inverse(side))
     end
     putmarker!(r)
 end

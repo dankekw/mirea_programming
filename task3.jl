@@ -25,14 +25,45 @@ function move_and_count(robot::Robot, side::HorizonSide)::Int
     return num_steps
 end
 
+function move_to_side(robot::Robot, side::HorizonSide)::Nothing
+    while isborder(robot, side) == false
+        move!(robot, side)   
+    end
+end 
+
+function inverse(side::HorizonSide)::HorizonSide
+    if side == Nord
+        return Sud
+    elseif side == Sud
+        return Nord
+    elseif side == Ost
+        return West
+    else
+        return Ost
+    end
+end
+
 #ставит маркеры по границе окна и возвращает робота в исходное положение 
-function mark_perimetr(robot::Robot)::Nothing
+function mark_all(robot::Robot)::Nothing
     steps_to_Sud = move_and_count(robot, Sud)
     steps_to_West = move_and_count(robot, West)
 
-    for side in (Nord, Ost, Sud, West)
-        put_marks_side!(robot, side)
+    side = Ost
+    putmarker!(robot)
+    put_marks_side!(robot, side)
+    move!(robot, Nord)
+    while isborder(r, Nord) == false
+        side = inverse(side)
+        putmarker!(robot)
+        put_marks_side!(r, side)
+        move!(robot, Nord)
+        putmarker!(robot)
     end
+
+    put_marks_side!(robot, inverse(side))
+
+    move_to_side(robot, Sud)
+    move_to_side(robot, West)
 
     move_to_num_steps_to_side(robot, Nord, steps_to_Sud)
     move_to_num_steps_to_side(robot, Ost, steps_to_West)
