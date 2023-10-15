@@ -299,7 +299,7 @@ function go_around_barrier_and_get_path!(r::Robot, direct_side::HorizonSide)::Ar
             push!(path_return, (inverse_side(direct_side), num_of_direct_steps))
             push!(path_return, (inverse_side(reverse_side), num_of_orthohonal_steps))
         else
-            path_return = [(North, 0)]
+            path_return = [(Nord, 0)]
         end
 
         while num_of_orthohonal_steps > 0
