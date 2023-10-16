@@ -1,10 +1,12 @@
-function lab_7(r::Robot)
-    path = go_to_west_south_corner_and_return_path!(r; go_around_barriers = true)
+include("MyFunctions.jl")
 
-    is_marker_now = iseven(get_path_length(path)) 
+function task7(r::Robot)
+    path = go_to_the_sud_west_corner_and_return_path!(r)
 
-    side = East
-    while !(isborder(r, North) && isborder(r, side))
+    is_marker_now = iseven(get_length_path(path)) 
+
+    side = Ost
+    while !(isborder(r, Nord) && isborder(r, side))
         if (is_marker_now)
             putmarker!(r)
         end
@@ -14,25 +16,26 @@ function lab_7(r::Robot)
             is_marker_now = !is_marker_now  
         end
 
-        if move_up_condition(r)
+        if move_cond(r)
             if (is_marker_now)
                 putmarker!(r)
             end
-            move!(r, North)
+            move!(r, Nord)
             is_marker_now = !is_marker_now
             
             side = inverse_side(side)
         end  
     end
+
     if is_marker_now
         putmarker!(r)
     end
 
-    go_to_west_south_corner_and_return_path!(r)
+    go_to_the_sud_west_corner_and_return_path!(r)
     go_by_path!(r, path)
 
 end
 
-function move_up_condition(r::Robot)::Bool
-    return (isborder(r, East) || isborder(r, West)) && !(isborder(r,North))
+function move_cond(r::Robot)::Bool
+    return (isborder(r, Ost) || isborder(r, West)) && !(isborder(r,Nord))
 end

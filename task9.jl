@@ -1,16 +1,20 @@
-function lab_9(r::Robot)
-    steps = 1
-    side = North
-    while ismarker(r)==false
+include("MyFunctions.jl")
+
+function task9(r::Robot)
+    counter_steps = 1
+    side = Nord
+
+    while ismarker(r) == false
         for _ in 1:2
-            special_move!(r,side,steps)
-            side=counterclockwise_side(side)
+            move_for9(r,side,counter_steps)
+            side = counterclockwise_side(side)
         end
-        steps += 1
+        counter_steps += 1
     end
-    println("Marker found!")
+    println("Нашёлся")
 end
-function special_move!(r::Robot,side::HorizonSide,num::Int)
+
+function move_for9(r::Robot,side::HorizonSide,num::Int)
     for _ in 1:num
         if ismarker(r)
             return nothing

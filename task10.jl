@@ -1,31 +1,35 @@
-function lab_10(r::Robot)
-    local_ans = 0
-    field_size = 1
-    side = East
+include("MyFunctions.jl")
 
-    local_ans += temperature(r)
-    println("temperature here is " * string(temperature(r)))
+function task10(r::Robot)
+    answer = 0
+    size_that_field = 1
+    side = Ost
 
-    while !isborder(r,North)
+    answer += temperature(r)
+    println("Температура здесь: " * string(temperature(r)))
+
+    while !isborder(r,Nord)
+
         while !isborder(r,side) 
-            local_ans += special_move(r, side)
-            field_size += 1
+            answer += move_sp(r, side)
+            size_that_field += 1
         end
-        local_ans += special_move(r, North)
-        
-        field_size += 1
+
+        answer += move_sp(r, Nord)
+        size_that_field += 1
         side=inverse_side(side)
     end
+
     while !isborder(r,side)   
-        local_ans += special_move(r, side)
-        field_size += 1
+        answer += move_sp(r, side)
+        size_that_field += 1
     end 
     
-    return (local_ans/(field_size))
+    return (answer/(size_that_field))
 end
 
-function special_move(r::Robot, side::HorizonSide)
+function move_sp(r::Robot, side::HorizonSide)
     move!(r,side)
-    println("temperature here is " * string(temperature(r)))
+    println("Температура здесь: " * string(temperature(r)))
     return temperature(r)
 end
