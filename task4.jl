@@ -1,22 +1,40 @@
-include("MyFunctions.jl")
+#=
+ДАНО: Робот - Робот - в произвольной клетке ограниченного прямоугольного поля.
+РЕЗУЛЬТАТ: Робот - в исходном положении, и клетки поля промакированы так: нижний ряд - полностью, следующий - весь, за исключением одной последней клетки на Востоке, следующий - за исключением двух последних клеток на Востоке, и т.д.
+=#
 
-function task4(r::Robot)
-    path = go_to_the_sud_west_corner_and_return_path!(r; go_around_barriers=false)
+include("RobotFunc.jl")
 
-    distance = go_to_the_border_return_and_get_distance!(r, Ost; go_around_barriers=false)
-    marks_to_do = distance
+function mark_rows!(r::Robot)
+    num_steps_ost = moves!(r, Ost)
+    num_vertically = moves!(r, Sud)
+    num_horizontally = moves!(r, West)
 
-    while !isborder(r,Nord) && marks_to_do > 0
-        go!(r, Ost; steps = marks_to_do, go_around_barriers = false, markers = true)
-        go!(r, West; steps = marks_to_do, go_around_barriers = false, markers = false)
-        move!(r,Nord)
-        marks_to_do -= 1
-    end
+    putmarkers_for_task4!(r, num_horizontally)
 
-    go!(r, Ost; steps = marks_to_do, go_around_barriers = false, markers = true)
-    go!(r, West; steps = marks_to_do, go_around_barriers = false, markers = false)
-
-    go_to_the_sud_west_corner_and_return_path!(r; go_around_barriers=false)
-    go_by_path!(r, path)
+    moves!(r, Sud)
+    moves!(r, West)
+    moves!(r, Nord, num_vertically)
+    moves!(r, Ost, num_horizontally - num_steps_ost)
 end
 
+
+function put_num_markers!(r::Robot, side::HorizonSide, num_marks::Int)# маркирует заданное количество клеток в заданной стороне
+    for _ in 1:num_marks
+        putmarker!(r)
+        move!(r, side)
+    end
+    putmarker!(r)
+end
+
+function putmarkers_for_task4!(r::Robot, num_marks::Int)
+    while !isborder(r, Nord)
+        put_num_markers!(r, Ost, num_marks)
+
+        move!(r, Nord)
+        moves!(r, West)
+        num_marks -= 1
+    end
+    
+    put_num_markers!(r, Ost, num_marks)
+end

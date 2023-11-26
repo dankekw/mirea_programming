@@ -1,36 +1,31 @@
-function task6(r::Robot)
-    path = go_to_west_south_corner_and_return_path!(r; go_around_barriers = true)
-    
-    side = North
-    
-    while side != "border"
-        side = sneak!(r, side)
-    end
+#=
+ДАНО: На ограниченном внешней прямоугольной рамкой поле имеется ровно одна внутренняя перегородка в форме прямоугольника. Робот -в произвольной клетке поля между внешней и внутренней перегородками. 
+РЕЗУЛЬТАТ: Робот -в исходном положении и по всему периметру внутренней перегородки поставлены маркеры. 
+=#
 
-    for i in (North, East, South, West)
-        while isborder(r, clockwise_side(i) )
-            putmarker!(r)
-            move!(r, i)
+include("RobotFunc.jl")
+
+
+function mark_rectangle_perimeter(r)
+    num_steps = through_rectangles_into_angle(r, (Sud, Ost))
+    direct = West
+    while (isborder(r, Nord) == false)
+        if isborder(r, direct)
+            direct = inverse(direct)
+            move!(r, Nord)
+        else
+            move!(r, direct)
         end
+    end
+    while (ismarker(r) == false)
         putmarker!(r)
-        move!(r, clockwise_side(i) )
-    end 
-
-    go_to_west_south_corner_and_return_path!(r)
-    go_by_path!(r, path)
-end
-
-function sneak!(r, side)
-     
-    while !isborder(r, side)
-        (isborder(r, East)) ? break : move!(r,side)
+        if isborder(r, HorizonSide(mod(Int(direct) - 1, 4)))
+            move!(r, direct)
+        else
+            direct = HorizonSide(mod(Int(direct) - 1, 4))
+            move!(r, direct)
+        end
     end
-    if isborder(r, East)
-        my_ans = "border"
-    else
-        move!(r, East)
-        my_ans = inverse_side(side)
-    end
-    
-    return my_ans
+    through_rectangles_into_angle(r, (Sud, West))
+    move_from_angle!(r, (Nord, Ost), num_steps)
 end
