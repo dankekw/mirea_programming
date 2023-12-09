@@ -1,17 +1,33 @@
-include("MyFunctions.jl")
+#=
+ДАНО: Робот - в произвольной клетке ограниченного прямоугольного поля.
+РЕЗУЛЬТАТ: Робот - в исходном положении, и все клетки поля промакированы.
+=#
 
-function task3(r::Robot)
-    path = go_to_the_sud_west_corner_and_return_path!(r)
+include("RobotFunc.jl")
 
-    side = Ost
-    while !isborder(r, Nord)
-        go_to_the_border_and_return_path!(r, side; markers=true)
-        side = inverse_side(side)
-        go!(r, Nord)
+function mark_field!(r::Robot)
+    num_vertically = moves!(r, Sud)
+    num_horizontally = moves!(r, West)
+
+    putmarkers_for_task3!(r, Nord)
+
+    moves!(r, Sud)
+    moves!(r, West)
+    moves!(r, Nord, num_vertically)
+    moves!(r, Ost, num_horizontally)
+end
+
+
+function putmarkers_for_task3!(r::Robot, side::HorizonSide)
+    while !isborder(r, side)
+        putmarker!(r)
+        move!(r, side)
     end
 
-    go_to_the_border_and_return_path!(r, side; markers=true)
+    putmarker!(r)
 
-    go_to_the_sud_west_corner_and_return_path!(r)
-    go_by_path!(r, path)
+    if !isborder(r, Ost)
+        move!(r, Ost)
+        return putmarkers!(r, inverse(side))#рекурсивный вызов функции в противоположенном напрапвлении 
+    end
 end

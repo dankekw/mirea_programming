@@ -1,10 +1,19 @@
-include("MyFunctions.jl")
+#=
+ДАНО: Робот в произвольной клетке поля (без внутренних перегородок и маркеров) 
+РЕЗУЛЬТАТ: Робот -в исходном положении, и все клетки по периметру внешней рамки промакированы 
+=#
 
-function task2(r::Robot)
-    path = go_to_the_sud_west_corner_and_return_path!(r)
+include("RobotFunc.jl")
 
-    for i ∈ (Nord, Ost, Sud, West)
-        go_to_the_border_and_return_path!(r, i; markers=true)
+
+function mark_frame_perimetr!(r::Robot)
+    num_vertically = moves!(r, Sud)
+    num_horizontally = moves!(r, West)
+    
+    for side in [Nord, Ost, Sud, West]
+        putmarkers!(r, side) 
     end
-    go_by_path!(r, path)
+
+    moves!(r, Nord, num_vertically)
+    moves!(r, Ost, num_horizontally)
 end

@@ -1,15 +1,17 @@
-include("MyFunctions.jl")
+#=
+ДАНО: На ограниченном внешней прямоугольной рамкой поле имеется ровно одна внутренняя перегородка в форме прямоугольника. Робот - в произвольной клетке поля между внешней и внутренней перегородками. 
+РЕЗУЛЬТАТ: Робот - в исходном положении и по всему периметру, как внутренней, так и внешней, перегородки поставлены маркеры.
+=#
 
-function task5(r::Robot)
+include("RobotFunc.jl")
 
-    path = go_to_the_sud_west_corner_and_return_path!(r; go_around_barriers = true)
+function mark_angles(r)
+    num_steps = through_rectangles_into_angle(r,(Sud,West))
 
-    
-    for side in (Nord, Ost, Sud, West)
-        go_to_the_border_and_return_path!(r, side; go_around_barriers = true)
+    for side in (Nord,Ost,Sud,West)
+        moves!(r,side) 
         putmarker!(r)
     end
-
-    go_by_path!(r, path)
+    
+    move_from_angle!(r,(Nord, Ost),num_steps)
 end
-
