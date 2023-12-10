@@ -1,41 +1,33 @@
-include("MyFunctions.jl")
+#=
+ДАНО: Робот - в произвольной клетке ограниченного прямоугольного поля (без внутренних перегородок) 
+РЕЗУЛЬТАТ: Робот - в исходном положении, в клетке с Роботом стоит маркер, и все остальные клетки поля промаркированы в шахматном порядке 
+=#
 
-function task7(r::Robot)
-    path = go_to_the_sud_west_corner_and_return_path!(r)
+include("RobotFunc.jl")
 
-    is_marker_now = iseven(get_length_path(path)) 
+function mark_chess_and_return(r)
+    num_steps = through_rectangles_into_angle(r, (Sud, West))
+    direct = Ost
+    put_marker_flag = true
 
-    side = Ost
-    while !(isborder(r, Nord) && isborder(r, side))
-        if (is_marker_now)
+    if (sum(num_steps[1:2:end]) % 2 != 0)
+        put_marker_flag = false
+    end
+
+    while (isborder(r, Nord) == false) || (isborder(r, Ost) == false)
+        if put_marker_flag
             putmarker!(r)
+            put_marker_flag = false
+        else
+            put_marker_flag = true
         end
-        
-        if !(isborder(r, side))
-            move!(r,side)
-            is_marker_now = !is_marker_now  
-        end
-
-        if move_cond(r)
-            if (is_marker_now)
-                putmarker!(r)
-            end
+        if isborder(r, direct)
+            direct = inverse(direct)
             move!(r, Nord)
-            is_marker_now = !is_marker_now
-            
-            side = inverse_side(side)
-        end  
+        else
+            move!(r, direct)
+        end
     end
-
-    if is_marker_now
-        putmarker!(r)
-    end
-
-    go_to_the_sud_west_corner_and_return_path!(r)
-    go_by_path!(r, path)
-
-end
-
-function move_cond(r::Robot)::Bool
-    return (isborder(r, Ost) || isborder(r, West)) && !(isborder(r,Nord))
+    through_rectangles_into_angle(r, (Sud, West))
+    move_from_angle!(r, (Nord, Ost), num_steps)
 end

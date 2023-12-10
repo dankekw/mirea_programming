@@ -1,35 +1,27 @@
-include("MyFunctions.jl")
+#=
+ДАНО: Робот - в юго-западном углу поля, на котором расставлено некоторое количество маркеров 
+РЕЗУЛЬТАТ: Функция вернула значение средней температуры всех замаркированных клеток 
+=#
 
-function task10(r::Robot)
-    answer = 0
-    size_that_field = 1
-    side = Ost
+include("RobotFunc.jl")
 
-    answer += temperature(r)
-    println("Температура здесь: " * string(temperature(r)))
+function get_average_temperature(r)
+    count_marks = 0
+    all_temperature = 0
+    direction = Ost
 
-    while !isborder(r,Nord)
-
-        while !isborder(r,side) 
-            answer += move_sp(r, side)
-            size_that_field += 1
+    while ((isborder(r, Ost) == false) || (isborder(r, Nord) == false))
+        if ismarker(r)
+            count_marks += 1
+            all_temperature += temperature(r)
         end
-
-        answer += move_sp(r, Nord)
-        size_that_field += 1
-        side=inverse_side(side)
+        if isborder(r, direction)
+            direction = inverse(direction)
+            move!(r, Nord)
+        else
+            move!(r, direction)
+        end
     end
 
-    while !isborder(r,side)   
-        answer += move_sp(r, side)
-        size_that_field += 1
-    end 
-    
-    return (answer/(size_that_field))
-end
-
-function move_sp(r::Robot, side::HorizonSide)
-    move!(r,side)
-    println("Температура здесь: " * string(temperature(r)))
-    return temperature(r)
+    println(all_temperature / count_marks)
 end

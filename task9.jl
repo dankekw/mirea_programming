@@ -1,24 +1,27 @@
-include("MyFunctions.jl")
+#=
+ДАНО: Где-то на неограниченном со всех сторон поле и без внутренних перегородок имеется единственный маркер. Робот - в произвольной клетке поля. 
+РЕЗУЛЬТАТ: Робот - в клетке с тем маркером. 
+=#
 
-function task9(r::Robot)
-    counter_steps = 1
+include("RobotFunc.jl")
+
+function find_marker(r)
+    n = 1
     side = Nord
-
     while ismarker(r) == false
         for _ in 1:2
-            move_for9(r,side,counter_steps)
-            side = counterclockwise_side(side)
+            find_marker(r, side, n)
+            side = right(side)
         end
-        counter_steps += 1
+        n += 1
     end
-    println("Нашёлся")
 end
 
-function move_for9(r::Robot,side::HorizonSide,num::Int)
-    for _ in 1:num
+function find_marker(r, side, n)
+    for _ in 1:n
         if ismarker(r)
             return nothing
         end
-        move!(r,side)
+        move!(r, side)
     end
 end

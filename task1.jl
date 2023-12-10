@@ -4,7 +4,6 @@
 =#
 include("RobotFunc.jl")
 
-#основная функция для запуска
 function mark_kross!(r::Robot)::Nothing 
     for side in (Nord, West, Sud, Ost)
         putmarkers!(r, side)

@@ -1,36 +1,58 @@
-include("MyFunctions.jl")
+#=
+На прямоугольном поле произвольных размеров расставить маркеры в виде "шахматных" клеток, начиная с юго-западного угла поля, когда каждая отдельная "шахматная" клетка имеет размер
+ n x n клеток поля (n - это параметр функции). Начальное положение Робота - произвольное, конечное - совпадает с начальным. Клетки на севере и востоке могут получаться "обрезанными"
+ - зависит от соотношения размеров поля и "шахматных" клеток. 
+(Подсказка: здесь могут быть полезными две глобальных переменных, в которых будут содержаться текущие декартовы координаты
+ Робота относительно начала координат в левом нижнем углу поля, например) 
+=#
+include("RobotFunc.jl")
 
-function task12(r::Robot, cell_size::Int)
-    path = go_to_the_sud_west_corner_and_return_path!(r)
-    x=0; y=0
-    direction = Ost
-    
-    while !(isborder(r, Nord) && isborder(r, Ost))
-        marker_sp(r, x, y, cell_size)
-        if move_cond(r)
-            move!(r, Nord)
-            y += 1
-            marker_sp(r, x, y, cell_size)
-            direction = inverse_side(direction)
-        end
-        
-        move!(r,direction)
-        (direction == Ost) ? x += 1 : x -= 1
+
+CELL_SIZE = 0
+ROBOT_CURRENT_POS = [0, 0]
+
+function mark_chess(r::Robot, n::Int=0)
+    global CELL_SIZE
+
+    if n != 0
+        CELL_SIZE = n
     end
 
-    marker_sp(r, x, y, cell_size)
+    side = Ost
+    mark_row(r, side)
+    while isborder(r, Nord) == false
+        move_decart!(r, Nord)
+        side = inverse(side)
+        mark_row(r, side)
+    end
 
-    go_to_the_sud_west_corner_and_return_path!(r)
-    go_by_path!(r, path)
 end
 
-function marker_sp(r, x, y, cell_size)
-    if (mod(x, 2 * cell_size)) < cell_size && (mod(y, 2 * cell_size)) < cell_size || 
-        (mod(x + cell_size, 2 * cell_size)) < cell_size && (mod(y, 2 * cell_size)) >= cell_size
+function mark_row(r::Robot, side::HorizonSide)
+    putmarker_chess!(r)
+    while isborder(r, side) == false
+        move_decart!(r, side)
+        putmarker_chess!(r)
+    end
+end
+
+function putmarker_chess!(r::Robot)
+    global ROBOT_CURRENT_POS
+    if (mod(ROBOT_CURRENT_POS[1], 2 * CELL_SIZE)) < CELL_SIZE && (mod(ROBOT_CURRENT_POS[2], 2 * CELL_SIZE)) < CELL_SIZE || (mod(ROBOT_CURRENT_POS[1] + CELL_SIZE, 2 * CELL_SIZE)) < CELL_SIZE && (mod(ROBOT_CURRENT_POS[2], 2 * CELL_SIZE)) >= CELL_SIZE
         putmarker!(r)
     end
 end
 
-function move_cond(r)
-    return isborder(r, Ost) || isborder(r, West) && !(isborder(r, Sud) && isborder(r, West))
+function move_decart!(r::Robot, side::HorizonSide)
+    global ROBOT_CURRENT_POS
+    if side == Nord
+        ROBOT_CURRENT_POS[2] += 1
+    elseif side == Sud
+        ROBOT_CURRENT_POS[2] -= 1
+    elseif side == Ost
+        ROBOT_CURRENT_POS[1] += 1
+    else
+        ROBOT_CURRENT_POS[1] -= 1
+    end
+    move!(r, side)
 end
