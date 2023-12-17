@@ -39,6 +39,10 @@ function right(side::HorizonSide)
     HorizonSide(mod(Int(side)-1, 4))
 end
 
+function left(side::HorizonSide)  
+    HorizonSide(mod(Int(side) + 1, 4))
+end
+
 
 """
     moves!(r::Robot, side::HorizonSide)
@@ -166,7 +170,7 @@ end
 -- sides - содержит последовательность направлений перемещений
 -- num_steps - содержит последовательность чисел шагов в каждом из этих направлений, соответственно; при этом, если длина последовательности sides меньше длины последовательности num_steps, то предполагается, что последовательность sides должна быть продолжена периодически        
 """
-function movements_if_possible!(r, sides, num_steps::Vector{Any})
+function movements_if_possible!(r, sides, num_steps::Vector{Int})
     for (i, n) in enumerate(num_steps)
         movements_if_possible!(r, sides[mod(i - 1, length(sides))+1], n)
     end
@@ -209,6 +213,18 @@ function putmarkers_if_possible!(r::Robot, side::HorizonSide, count::Int)
     end
 end
 
+"""
+    get_num_movements_if_possible!(r::Robot, side::HorizonSide)
+
+-- Перемещает Робота в заданном направлении до стенки, минуя внутренние перегородки, и возвращает сделанное число шагов    
+"""
+function get_num_movements_if_possible!(r::Robot, side::HorizonSide)
+    num_steps = 0
+    while move_if_possible!(r, side) == true
+        num_steps += 1
+    end
+    return num_steps
+end
 
 """
     mark_and_enumerate_if_possible!(r::Robot, side::HorizonSide)
