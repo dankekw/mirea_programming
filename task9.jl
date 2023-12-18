@@ -5,21 +5,21 @@
 
 include("RobotFunc.jl")
 
-function find_marker(r)
+function spiral!(stop_condition::Function, r)
     n = 1
     side = Nord
-    while ismarker(r) == false
+    while !stop_condition() 
         for _ in 1:2
-            find_marker(r, side, n)
+            find_marker(stop_condition, r, side, n=max_steps)
             side = right(side)
         end
         n += 1
     end
 end
 
-function find_marker(r, side, n)
-    for _ in 1:n
-        if ismarker(r)
+function along!(stop_condition::Functionr, side, max_steps)
+    for _ in 1:max_steps
+        if stop_condition()
             return nothing
         end
         move!(r, side)
