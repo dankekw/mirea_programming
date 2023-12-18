@@ -7,8 +7,8 @@ include("RobotFunc.jl")
 
 
 function mark_rectangle_perimeter(r)
-    num_steps = through_rectangles_into_angle(r, (Sud, Ost))
-    direct = West
+    num_steps = through_rectangles_into_angle(r, (Sud, West))
+    direct = Ost
     while (isborder(r, Nord) == false)
         if isborder(r, direct)
             direct = inverse(direct)
@@ -19,13 +19,13 @@ function mark_rectangle_perimeter(r)
     end
     while (ismarker(r) == false)
         putmarker!(r)
-        if isborder(r, HorizonSide(mod(Int(direct) - 1, 4)))
+        if isborder(r, right(r))
             move!(r, direct)
         else
-            direct = HorizonSide(mod(Int(direct) - 1, 4))
+            direct = HorizonSide(right(r))
             move!(r, direct)
         end
     end
-    through_rectangles_into_angle(r, (Sud, West))
+   
     move_from_angle!(r, (Nord, Ost), num_steps)
 end
