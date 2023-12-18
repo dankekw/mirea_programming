@@ -26,6 +26,6 @@ function mark_rectangle_perimeter(r)
             move!(r, direct)
         end
     end
-   
+    through_rectangles_into_angle(r, (Sud, West))
     move_from_angle!(r, (Nord, Ost), num_steps)
 end
