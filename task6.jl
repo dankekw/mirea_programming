@@ -19,10 +19,10 @@ function mark_rectangle_perimeter(r)
     end
     while (ismarker(r) == false)
         putmarker!(r)
-        if isborder(r, right(r))
+        if isborder(r, right(direct)
             move!(r, direct)
         else
-            direct = HorizonSide(right(r))
+            direct = HorizonSide(right(direct))
             move!(r, direct)
         end
     end
