@@ -1,3 +1,45 @@
+HSR = HorizonSideRobots
+
+abstract type AbstractRobot end
+
+HSR.move!(robot::AbstractRobot, side) = move!(get_baserobot(robot), side)
+HSR.isborder(robot::AbstractRobot, side) = isborder(get_baserobot(robot), side)
+HSR.putmarker!(robot::AbstractRobot) = putmarker!(get_baserobot(robot))
+HSR.ismarker(robot::AbstractRobot) = ismarker(get_baserobot(robot))
+HSR.temperature(robot::AbstractRobot) = temperature(get_baserobot(robot))
+
+struct BorderRobot <: AbstractRobot
+     robot::Robot
+end
+
+get_baserobot(robot::BorderRobot) = robot.robot
+
+function try_move!(robot::BorderRobot, side)
+     ortogonal_side = left(side)
+     back_side = inverse(ortogonal_side)
+     n=0
+     while isborder(robot, side)==true && isborder(robot, ortogonal_side) == false
+         move!(robot, ortogonal_side)
+        n += 1
+     end
+     if isborder(robot,side)==true
+         move!(robot, back_side, n)
+         return false
+     end
+     move!(robot, side)
+     if n > 0 # продолжается обход
+         along!(()->!isborder(robot, back_side), robot, side) 
+         move!(robot, back_side, n)
+     end
+     return true
+ end
+
+along!(robot::BorderRobot, side::HorizonSide) = while try_move!(robot, side) end
+
+along!(stop_condition::Function, robot::BorderRobot, side::HorizonSide) =
+     while !stop_condition() && try_move!(robot, side) end
+
+
 """
     putmarkers!(r::Robot, side::HorizonSide)
 
