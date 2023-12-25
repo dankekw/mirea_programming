@@ -5,23 +5,26 @@
 
 include("RobotFunc.jl")
 
-function spiral!(stop_condition::Function, r)
+
+function spiral!(stop_condition::Function, robot)
+    r = BorderRobot(robot)
     n = 1
     side = Nord
     while !stop_condition() 
         for _ in 1:2
-            find_marker(stop_condition, r, side, n=max_steps)
+            along!(stop_condition, r, side, max_steps=n)
             side = right(side)
         end
         n += 1
     end
 end
 
-function along!(stop_condition::Functionr, side, max_steps)
+
+function along!(stop_condition::Function, r, side, max_steps)
     for _ in 1:max_steps
         if stop_condition()
             return nothing
         end
-        move!(r, side)
+        try_move!(r, side)
     end
 end
